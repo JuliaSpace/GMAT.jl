@@ -52,13 +52,14 @@ function state_size()
     ccall((:GetStateSize, libCInterface), Cint, ())
 end
 
-function run()
-    cd(GMAT_DIR) do
+function run(dir)
+    cd(dir) do
         code = ccall((:RunScript, libCInterface), Cint, ())
         code != 0  && throw(GmatError())
     end
     print_message()
 end
+run() = run(BIN)
 
 function last_message()
     unsafe_string(ccall((:getLastMessage, libCInterface), Cstring, ()))
