@@ -3,7 +3,12 @@ module GMAT
 using Compat
 
 const RELEASE = "R2015a"
-const GMAT_DIR = joinpath(@__DIR__, "..", "deps", "GMAT", RELEASE, "bin")
+const BASE = joinpath(@__DIR__, "..", "deps", "GMAT")
+@static if is_windows()
+    const BIN = joinpath(BASE, "bin")
+else
+    const BIN = joinpath(BASE, RELEASE, "bin")
+end
 
 const DEPS = joinpath(@__DIR__, "..", "deps", "deps.jl")
 if isfile(DEPS)
@@ -22,7 +27,7 @@ function start(dir)
         return code
     end
 end
-start() = start(GMAT_DIR)
+start() = start(BIN)
 
 function load(dir, file)
     cd(dir) do
