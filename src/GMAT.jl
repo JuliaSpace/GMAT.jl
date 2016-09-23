@@ -3,12 +3,12 @@ module GMAT
 using Compat
 
 const RELEASE = "R2015a"
-const BASE = joinpath(@__DIR__, "..", "deps", "GMAT")
 @static if is_windows()
-    const BIN = joinpath(BASE, "bin")
+    const BASE = joinpath(@__DIR__, "..", "deps", "GMAT")
 else
-    const BIN = joinpath(BASE, RELEASE, "bin")
+    const BASE = joinpath(@__DIR__, "..", "deps", "GMAT", RELEASE)
 end
+const BIN = joinpath(BASE, "bin")
 
 const DEPS = joinpath(@__DIR__, "..", "deps", "deps.jl")
 if isfile(DEPS)
