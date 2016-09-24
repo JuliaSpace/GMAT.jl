@@ -8,7 +8,7 @@ const RELEASE = "R2015a"
 @static if is_linux()
     push!(BinDeps.defaults, Binaries)
 end
-gmat = library_dependency("libCInterface", aliases=["libCInterface.so.$RELEASE"])
+gmat = library_dependency("libCInterface")
 provides(Binaries, URI("$BASE_URL/GMAT-$RELEASE/gmat-macosx-x64-$RELEASE.tar.gz"), gmat, os=:Darwin, unpacked_dir="GMAT/$RELEASE/bin")
 provides(Binaries, URI("$BASE_URL/GMAT-$RELEASE/gmat-ubuntu-x64-$RELEASE.tar.gz"), gmat, os=:Linux, unpacked_dir="GMAT/$RELEASE/bin")
 provides(Binaries, URI("$BASE_URL/GMAT-$RELEASE/gmat-win-i586-$RELEASE.zip"), gmat, os=:Windows, unpacked_dir="GMAT/bin")
