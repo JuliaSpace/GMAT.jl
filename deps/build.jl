@@ -1,7 +1,7 @@
 using BinDeps
 
 const BASE_URL = "http://downloads.sourceforge.net/project/gmat/GMAT"
-const RELEASE = "R2015a"
+const RELEASE = "R2016a"
 
 @BinDeps.setup
 
