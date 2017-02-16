@@ -3,3 +3,4 @@
 *.jl.mem
 deps/GMAT/
 deps/deps.jl
+deps/downloads/
