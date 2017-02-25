@@ -2,7 +2,7 @@ module GMAT
 
 using Compat
 
-const RELEASE = "R2015a"
+const RELEASE = "R2016a"
 @static if is_windows()
     const BASE = joinpath(@__DIR__, "..", "deps", "GMAT")
 else

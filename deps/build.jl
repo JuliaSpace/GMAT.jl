@@ -9,7 +9,7 @@ const RELEASE = "R2016a"
     push!(BinDeps.defaults, Binaries)
 end
 gmat = library_dependency("libCInterface")
-provides(Binaries, URI("$BASE_URL/GMAT-$RELEASE/gmat-macosx-x64-$RELEASE.tar.gz"), gmat, os=:Darwin, unpacked_dir=joinpath("GMAT", RELEASE, "bin"))
+provides(Binaries, URI("$BASE_URL/GMAT-$RELEASE/gmat-macosx-x64-$RELEASE.zip"), gmat, os=:Darwin, unpacked_dir=joinpath("GMAT", RELEASE, "bin"))
 provides(Binaries, URI("$BASE_URL/GMAT-$RELEASE/gmat-ubuntu-x64-$RELEASE.tar.gz"), gmat, os=:Linux, unpacked_dir=joinpath("GMAT", RELEASE, "bin"))
 provides(Binaries, URI("$BASE_URL/GMAT-$RELEASE/gmat-win-i586-$RELEASE.zip"), gmat, os=:Windows, unpacked_dir=joinpath("GMAT", "bin"))
 
