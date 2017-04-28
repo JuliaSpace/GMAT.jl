@@ -9,6 +9,7 @@ else
     const BASE = joinpath(@__DIR__, "..", "deps", "GMAT", RELEASE)
 end
 const BIN = joinpath(BASE, "bin")
+const SCRIPTS = joinpath(BASE, "julia")
 
 const DEPS = joinpath(@__DIR__, "..", "deps", "deps.jl")
 if isfile(DEPS)
@@ -27,6 +28,7 @@ Start the GMAT binary located in `dir` and connect to its interface. Needs to be
 called before calling any other function in GMAT.jl.
 """
 function start(dir)
+    !isdir(SCRIPTS) && mkdir(SCRIPTS)
     cd(dir) do
         code = ccall((:StartGmat, libCInterface), Cint, ())
         code != 0  && throw(GmatError())
@@ -43,24 +45,25 @@ called before calling any other function in GMAT.jl.
 start() = start(BIN)
 
 """
-    load(dir, file)
-
-Load the GMAT script `file` located in directory `dir`.
-"""
-function load(dir, file)
-    cd(dir) do
-        code = ccall((:LoadScript, libCInterface), Cint, (Cstring,), file)
-        code != 0  && throw(GmatError())
-        return code
-    end
-end
-
-"""
-    load(dir, file)
+    load(path)
 
 Load the GMAT script located at `path`.
 """
-load(path) = load(splitdir(path)...)
+function load(path)
+    filename = basename(path)
+    script = joinpath(SCRIPTS, filename)
+    cp(path, script, remove_destination=true)
+
+    try
+        cd(SCRIPTS) do
+            code = ccall((:LoadScript, libCInterface), Cint, (Cstring,), filename)
+            code != 0  && throw(GmatError())
+            return code
+        end
+    finally
+        rm(script)
+    end
+end
 
 """
     run_summary()
@@ -120,5 +123,12 @@ function last_message()
     unsafe_string(ccall((:getLastMessage, libCInterface), Cstring, ()))
 end
 print_message() = info(last_message())
+
+"""
+    count_objects()
+"""
+function count_objects()
+    ccall((:CountObjects, libCInterface), Cint, ())
+end
 
 end # module

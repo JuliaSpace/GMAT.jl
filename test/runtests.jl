@@ -9,9 +9,12 @@ end
 
 @testset "Load & Run" begin
     file = joinpath(GMAT.BASE, "samples", "Ex_HohmannTransfer.script")
-    GMAT.start()
-    @test GMAT.load(file) == 0
-    println(GMAT.run())
-    println(GMAT.state_size())
-    println(GMAT.state_description())
+    tmp = tempname()
+    cp(file, tmp, remove_destination=true)
+    try
+        GMAT.start()
+        @test GMAT.load(tmp) == 0
+    finally
+        rm(tmp)
+    end
 end
