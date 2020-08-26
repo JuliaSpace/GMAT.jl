@@ -1,0 +1,4 @@
+name = "GMAT"
+uuid = "af5f6e49-cefe-43d6-ba7f-e98344787928"
+authors = ["Helge Eichhorn <git@helgeeichhorn.de>"]
+version = "0.1.0"
