@@ -2,3 +2,6 @@ name = "GMAT"
 uuid = "af5f6e49-cefe-43d6-ba7f-e98344787928"
 authors = ["Helge Eichhorn <git@helgeeichhorn.de>"]
 version = "0.1.0"
+
+[deps]
+GMAT_jll = "5472d9e0-cb42-52f7-96c9-a9fd19db341f"
