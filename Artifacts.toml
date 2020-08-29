@@ -1,10 +1,6 @@
 [data]
-git-tree-sha1 = "c8304fb05bc491d8c2028b9b1e9a7f6b79f81460"
+git-tree-sha1 = "57d26c5107adc743bdb2cba39400f8c164b6d085"
 
-[gmat_data]
-git-tree-sha1 = "63b4c3c7d85662c6e1a55d209090328cb9b11c39"
-lazy = true
-
-    [[gmat_data.download]]
-    sha256 = "28a88dbe342faac2e4af4480be3c5d37f9538019"
-    url = "https://downloads.sourceforge.net/project/gmat/GMAT/GMAT-R2020a/GMAT-datafiles-R2020a.zip"
+    [[data.download]]
+    sha256 = "e0e9fc6be78b3c04cd5527cbb5a5889323eb164cc3606f6a86028bd6a08e5bd5"
+    url = "https://github.com/JuliaSpace/gmat-data/archive/2020a.tar.gz"

@@ -1,24 +1,44 @@
+#!/usr/bin/julia
 using Pkg.Artifacts
-using Pkg.GitTools
 using Pkg.PlatformEngines
+using Pkg.GitTools
+using SHA
 
-probe_platform_engines!()
-
-toml = joinpath(@__DIR__, "..", "Artifacts.toml")
-url = "https://downloads.sourceforge.net/project/gmat/GMAT/GMAT-R2020a/GMAT-datafiles-R2020a.zip"
-
-hash = create_artifact() do artifact_dir
-    tarball = download(url)
-    @show artifact_dir
-    try
-        global tarball_hash = bytes2hex(GitTools.blob_hash(tarball))
-        unpack(tarball, artifact_dir)
-    finally
-        rm(tarball)
+function sha256sum(tarball_path)
+    return open(tarball_path, "r") do io
+        return bytes2hex(sha256(io))
     end
 end
 
-bind_artifact!(toml, "gmat_data", hash;
-               download_info=[(url, tarball_hash)],
-               lazy=true,
-               force=true)
+
+function add_artifact!(
+    artifacts_toml::String,
+    name::String,
+    tarball_url::String;
+    clear=true,
+    options...,
+)
+    probe_platform_engines!()
+
+    tarball_path = download(tarball_url)
+    sha256 = sha256sum(tarball_path)
+
+    git_tree_sha1 = create_artifact() do artifact_dir
+        unpack(tarball_path, artifact_dir)
+    end
+
+    rm(tarball_path)
+    clear && remove_artifact(git_tree_sha1)
+
+    bind_artifact!(
+        artifacts_toml,
+        name,
+        git_tree_sha1;
+        download_info = [(tarball_url, sha256)],
+        options...,
+    )
+
+    return git_tree_sha1
+end
+
+add_artifact!(joinpath(@__DIR__, "..", "Artifacts.toml"), "data", "https://github.com/JuliaSpace/gmat-data/archive/2020a.tar.gz", force=true)
