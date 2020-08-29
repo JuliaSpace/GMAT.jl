@@ -1,134 +1,41 @@
 module GMAT
 
-using Compat
+using Pkg.Artifacts
 
-const RELEASE = "R2016a"
-@static if is_windows()
-    const BASE = joinpath(@__DIR__, "..", "deps", "GMAT")
-else
-    const BASE = joinpath(@__DIR__, "..", "deps", "GMAT", RELEASE)
-end
-const BIN = joinpath(BASE, "bin")
-const SCRIPTS = joinpath(BASE, "julia")
+using GMAT_jll
 
-const DEPS = joinpath(@__DIR__, "..", "deps", "deps.jl")
-if isfile(DEPS)
-    include(DEPS)
-else
-    error("GMAT was not found. Please run 'Pkg.build(\"GMAT\").")
-end
+export run_script
 
-type GmatError <: Exception end
-Base.showerror(io::IO, err::GmatError) = print(io, "GMAT Error: ", last_message());
+include("startup_file.jl")
 
 """
-    start(dir)
+	run_script(script;
+		data=joinpath(artifact"data", "gmat-data-2020a"),
+		output=joinpath(pwd(), "gmat-output"),
+	)
 
-Start the GMAT binary located in `dir` and connect to its interface. Needs to be
-called before calling any other function in GMAT.jl.
-"""
-function start(dir)
-    !isdir(SCRIPTS) && mkdir(SCRIPTS)
-    cd(dir) do
-        code = ccall((:StartGmat, libCInterface), Cint, ())
-        code != 0  && throw(GmatError())
-        return code
-    end
-end
+Run a GMAT `script` while optionally specifying the path to the `data` package and an
+`output` directory. The function will return a list of output files.
 
-"""
-    start()
+### References
 
-Start standard GMAT binary and connect to its interface. Needs to be
-called before calling any other function in GMAT.jl.
+- [GMAT Documentation](http://gmat.sourceforge.net/docs/R2020a/html/index.html)
 """
-start() = start(BIN)
-
-"""
-    load(path)
-
-Load the GMAT script located at `path`.
-"""
-function load(path)
-    filename = basename(path)
-    script = joinpath(SCRIPTS, filename)
-    cp(path, script, remove_destination=true)
-
-    try
-        cd(SCRIPTS) do
-            code = ccall((:LoadScript, libCInterface), Cint, (Cstring,), filename)
-            code != 0  && throw(GmatError())
-            return code
-        end
-    finally
-        rm(script)
-    end
-end
-
-"""
-    run_summary()
-
-Get the summary string for the last GMAT run.
-"""
-function run_summary()
-    summary = ccall((:GetRunSummary, libCInterface), Cstring, ())
-    unsafe_string(summary)
-end
-
-"""
-    state_description()
-
-Get the string describing the elements of the currently loaded state vector.
-"""
-function state_description()
-    desc = ccall((:GetStateDescription, libCInterface), Cstring, ())
-    desc != C_NULL ? unsafe_string(desc) : ""
-end
-
-"""
-    state_size()
-
-Get the size of the currently loaded state vector.
-"""
-function state_size()
-    ccall((:GetStateSize, libCInterface), Cint, ())
-end
-
-"""
-    run(dir)
-
-Run the script currently loaded in the GMAT instance located at directory `dir`.
-"""
-function run(dir)
-    cd(dir) do
-        code = ccall((:RunScript, libCInterface), Cint, ())
-        code != 0  && throw(GmatError())
-    end
-    print_message()
-end
-
-"""
-    run()
-
-Run the script currently loaded in the standard GMAT instance.
-"""
-run() = run(BIN)
-
-"""
-    last_message()
-
-Get the last status message from GMAT.
-"""
-function last_message()
-    unsafe_string(ccall((:getLastMessage, libCInterface), Cstring, ()))
-end
-print_message() = info(last_message())
-
-"""
-    count_objects()
-"""
-function count_objects()
-    ccall((:CountObjects, libCInterface), Cint, ())
+function run_script(script;
+	data=joinpath(artifact"data", "gmat-data-2020a"),
+	output=joinpath(pwd(), "gmat-output"),
+)
+	# Create output dir if it does not exist
+	isdir(output) || mkpath(output)
+	# Write the GMAT startup file to a temp file
+	startup = tempname()
+	open(startup, "w") do f
+		write(f, startup_file(data, output))
+	end
+	gmatconsole() do exe
+		run(`$exe -s $startup -r $script`)
+	end
+	return readdir(output)
 end
 
 end # module

@@ -4,3 +4,4 @@
 deps/GMAT/
 deps/deps.jl
 deps/downloads/
+Manifest.toml
