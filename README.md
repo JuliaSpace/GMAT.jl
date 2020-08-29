@@ -16,7 +16,8 @@ julia> Pkg.add("GMAT")
 
 ## Usage
 
-For the time being, the package only provides functionality to run GMAT scripts.
+For the time being, the package only provides functionality to run
+[GMAT scripts](http://gmat.sourceforge.net/docs/R2020a/html/index.html).
 
 ```julia
 using GMAT
