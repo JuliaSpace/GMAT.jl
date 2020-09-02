@@ -9,7 +9,7 @@
 
 This package can be installed using:
 
-```julia-repl
+```julia
 julia> using Pkg
 julia> Pkg.add("GMAT")
 ```
